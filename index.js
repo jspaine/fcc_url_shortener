@@ -7,7 +7,7 @@ var db = new Db(process.env.MONGODB_URI || 'mongodb://localhost:27017/urls');
 
 http.createServer(function(req, res) {
   var urlPath = decodeURIComponent(url.parse(req.url).pathname.substr(1));
-  var host = url.parse(req.url).host || 'localhost:8000';
+  var host = process.env.NODE_ENV === 'production' ? 'https://short-url-23.herokuapp.com' : 'http://localhost:8000';
 
   initDb(function(err, nextId) {
     if (err) return showError(err, 500);  
