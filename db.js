@@ -5,11 +5,13 @@ function Db(url) {
 }
 
 Db.prototype.open = function(cb) {
-  Mongo.connect(this.url, (err, db) => {
+  Mongo.connect(this.url, function(err, db) {
     if (err) return cb(err);
     this.db = db;
-    cb(err, this);
-  });
+    this.nextIndex(function(err, index) {
+      cb(err, index);
+    });
+  }.bind(this));
 };
 
 Db.prototype.close = function() {
@@ -17,8 +19,8 @@ Db.prototype.close = function() {
 };
 
 Db.prototype.nextIndex = function(cb) {
-  if (!this.db) return cb('no db');
-  this.find({'_id': -1}, {}, function(err, doc) {
+  if (!this.db) return cb('Database error');
+  this.find({'_id': -1}, function(err, doc) {
     if (err || !doc)
       return this.db.collection('urls')
         .insertOne({'_id': -1, count: 0}, function(err, res) {
@@ -38,17 +40,17 @@ Db.prototype.updateCount = function(newCount, cb) {
     }, cb);
 };
 
-Db.prototype.find = function(query, proj, cb) {
-  if (!this.db) return cb('no db');
+Db.prototype.find = function(query, cb) {
+  if (!this.db) return cb('Database error');
   this.db.collection('urls')
-    .findOne(query, proj, function(err, doc) {
+    .findOne(query, {'_id': 0}, function(err, doc) {
       if (err) return cb(err);
       cb(err, doc);
     });
 };
 
 Db.prototype.insert = function(query, cb) {
-  if (!this.db) return cb('no db');
+  if (!this.db) return cb('Database error');
   this.db.collection('urls')
     .insertOne(query, function(err, doc) {
       if (err) return cb(err);
