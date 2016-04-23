@@ -3,7 +3,7 @@ var url = require('url');
 var fs = require('fs');
 var path = require('path');
 var Db = require('./db')
-var db = new Db(process.env.MONGO_URL || 'mongodb://localhost:27017/urls');
+var db = new Db(process.env.MONGODB_URI || 'mongodb://localhost:27017/urls');
 
 http.createServer(function(req, res) {
   var urlPath = decodeURIComponent(url.parse(req.url).pathname.substr(1));
