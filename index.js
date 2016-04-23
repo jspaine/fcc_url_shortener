@@ -33,8 +33,10 @@ http.createServer(function(req, res) {
           });
         });
       });
-    } else {
+    } else if (urlPath === '') {
       showHtml(path.join(__dirname, 'index.html'));
+    } else {
+      showJson({error: 'invalid url'});
     }
   });
 
